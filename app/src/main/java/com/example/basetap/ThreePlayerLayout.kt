@@ -40,9 +40,9 @@ fun ThreePlayerLayout(
     var bottomLife by remember { mutableStateOf(0) }
 
     // Image resources
-    var topLeftImage by remember { mutableStateOf(R.drawable.boba_fett_any_methods_necessary_showcase) }
-    var topRightImage by remember { mutableStateOf(R.drawable.han_solo_never_tell_me_the_odds_showcase) }
-    var bottomImage by remember { mutableStateOf(R.drawable.darth_vader_victor_squadron_leader) }
+    var topLeftImage by remember { mutableStateOf(R.drawable.darth_maul_sith_revealed_showcase) }
+    var topRightImage by remember { mutableStateOf(R.drawable.qui_gon_jinn_student_of_the_living_force_showcase) }
+    var bottomImage by remember { mutableStateOf(R.drawable.avar_kriss_marshal_of_starlight_showcase) }
 
     // Bases
     var topLeftBaseId by remember { mutableStateOf(1) }

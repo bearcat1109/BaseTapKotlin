@@ -43,10 +43,10 @@ fun FourPlayerLayout(
     var bottomRightLife by remember { mutableStateOf(0) }
 
     // Image resources for each square
-    var topLeftImage by remember { mutableStateOf(R.drawable.boba_fett_any_methods_necessary_showcase) }
-    var topRightImage by remember { mutableStateOf(R.drawable.han_solo_never_tell_me_the_odds_showcase) }
-    var bottomLeftImage by remember { mutableStateOf(R.drawable.poe_dameron_i_can_fly_anything_showcase) }
-    var bottomRightImage by remember { mutableStateOf(R.drawable.lando_calrissian_buying_time_showcase) }
+    var topLeftImage by remember { mutableStateOf(R.drawable.darth_maul_sith_revealed_showcase) }
+    var topRightImage by remember { mutableStateOf(R.drawable.qui_gon_jinn_student_of_the_living_force_showcase) }
+    var bottomLeftImage by remember { mutableStateOf(R.drawable.avar_kriss_marshal_of_starlight_showcase) }
+    var bottomRightImage by remember { mutableStateOf(R.drawable.kylo_ren_were_not_done_yet_showcase) }
 
     // Base IDs for each square
     var topLeftBaseId by remember { mutableStateOf(1) }

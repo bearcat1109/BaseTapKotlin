@@ -120,7 +120,21 @@ enum class Bases(val id: Int, val baseName: String, val maxHealth: Int) {
     THEED_PALACE(41, "Theed Palace(Command)", 30),
     MASSASSI_TEMPLE(42, "Massassi Temple(Aggression)", 30),
     NADIRI_DOCKYARDS(43, "Nadiri Dockyards(Aggression)", 30),
-    MOS_EISLEY(44, "Mos Eisley(Cunning)", 30)
+    MOS_EISLEY(44, "Mos Eisley(Cunning)", 30),
+
+    // Set 5
+    VERGENCE_TEMPLE(45, "Vergence Temple(Vigilance)", 25),
+    NIGHTSISTER_LAIR(46, "Nightsister Lair(Vigilance)", 28),
+    SHADOWED_UNDERCITY(47, "Shadowed Undercity(Vigilance)", 28),
+    MYSTIC_MONASTERY(48, "Mystic Monastery(Command)", 25),
+    JEDI_TEMPLE(49, "Jedi Temple(Command)", 28 ),
+    STARLIGHT_TEMPLE(50, "Starlight Temple(Command)", 28),
+    TEMPLE_OF_DESTRUCTION(51, "Temple of Destruction(Aggression)", 25),
+    FORTRESS_VADER(52, "Fortress Vader(Aggression)", 28),
+    STRANGLED_CLIFFS(53, "Strangled Cliffs(Aggression)", 28),
+    TOMB_OF_EILRAM(54, "Tomb of Eilram(Cunning)", 25),
+    CRYSTAL_CAVES(55, "Crystal Caves(Cunning)", 28),
+    THE_HOLY_CITY(56, "The Holy City(Cunning)", 28)
     ;
 
     companion object {
@@ -758,7 +772,29 @@ fun LeaderSelectorForPlayer(
         R.drawable.admiral_ackbar_its_a_trap_showcase to "Admiral Ackbar, It's a Trap! (Showcase)",
         R.drawable.han_solo_never_tell_me_the_odds_showcase to "Han Solo, Never Tell Me The Odds (Showcase)",
         R.drawable.kazuda_xiono_best_pilot_in_the_galaxy_showcase to "Kazuda Xiono, Best Pilot in the Galaxy (Showcase)",
-        R.drawable.major_vonreg_red_baron_showcase to "Major Vonreg, Red Baron (Showcase)"
+        R.drawable.major_vonreg_red_baron_showcase to "Major Vonreg, Red Baron (Showcase)",
+        // LOF Showcases
+        R.drawable.kylo_ren_were_not_done_yet_showcase to "Kylo Ren, We're Not Done Yet (Showcase)",
+        R.drawable.luke_skywalker_faithful_friend_prize_wall to "Luke Skywalker, Faithful Friend (Showcase Prize Wall)",
+        R.drawable.darth_vader_dark_lord_of_the_sith_prize_wall to "Darth Vader, Dark Lord of the Sith (Showcase Prize Wall)",
+        R.drawable.mother_talzin_power_through_magick_showcase to "Mother Talzin, Power Through Magick (Showcase)",
+        R.drawable.ahsoka_tano_fighting_for_peace_showcase to "Ahsoka Tano, Fighting for Peace (Showcase)",
+        R.drawable.morgan_elsbeth_following_the_call_showcase to "Morgan Elsbeth, Following the Call (Showcase)",
+        R.drawable.supreme_leader_snoke_in_the_seat_of_power_showcase to "Supreme Leader Snoke, In the Seat of Power (Showcase)",
+        R.drawable.avar_kriss_marshal_of_starlight_showcase to "Avar Kriss, Marshall of Starlight (Showcase)",
+        R.drawable.kit_fisto_focused_jedi_master_showcase to "Kit Fisto, Focused Jedi Master (Showcase)",
+        R.drawable.rey_nobody_showcase to "Rey, Nobody (Showcase)",
+        R.drawable.barriss_offee_we_have_become_villians_showcase to "Barriss Offee, We Have Become Villians (Showcase)",
+        R.drawable.cal_kestis_i_cant_keep_hiding_showcase to "Cal Kestis, I Can't Keep Hiding (Showcase)",
+        R.drawable.anakin_skywalker_tempted_by_the_dark_side_showcase to "Anakin Skywalker, Tempted by the Dark Side (Showcase)",
+        R.drawable.darth_maul_sith_revealed_showcase to "Darth Maul, Sith Revealed (Showcase)",
+        R.drawable.obi_wan_kenobi_courage_makes_heroes_showcase to "Obi-Wan Kenobi, Courage Makes Heroes (Showcase)",
+        R.drawable.kanan_jarrus_help_us_survive_showcase to "Kanan Jarrus, Help Us Survive (Showcase)",
+        R.drawable.darth_revan_scourge_of_the_old_republic_showcase to "Darth Revan, Scourge of the Old Republic (Showcase)",
+        R.drawable.qui_gon_jinn_student_of_the_living_force_showcase to "Qui Gon Jinn, Student of the Living Force (Showcase)",
+        R.drawable.third_sister_seething_with_ambition_showcase to "Third Sister, Seething with Ambition (Showcase)",
+        // Misc
+        R.drawable.vader_prize_wall_banner to "Vader Prize Wall Banner"
         )
 
     var searchText by remember { mutableStateOf("") }

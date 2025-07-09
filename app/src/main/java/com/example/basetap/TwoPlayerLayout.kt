@@ -34,11 +34,11 @@ fun TwoPlayerLayout(
     var topLife by remember { mutableStateOf(0) }
     var bottomLife by remember { mutableStateOf(0) }
 
-    var topImage by remember { mutableStateOf(R.drawable.boba_fett_any_methods_necessary_showcase) }
-    var bottomImage by remember { mutableStateOf(R.drawable.han_solo_never_tell_me_the_odds_showcase) }
+    var topImage by remember { mutableStateOf(R.drawable.darth_maul_sith_revealed_showcase) }
+    var bottomImage by remember { mutableStateOf(R.drawable.qui_gon_jinn_student_of_the_living_force_showcase) }
 
-    var topBaseId by remember { mutableStateOf(13) }
-    var bottomBaseId by remember { mutableStateOf(7) }
+    var topBaseId by remember { mutableStateOf(47) }
+    var bottomBaseId by remember { mutableStateOf(28) }
 
     var playerNames by remember { mutableStateOf(List(2) { "Player ${it + 1}" }) }
 
