@@ -17,11 +17,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
@@ -47,7 +51,6 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import kotlinx.coroutines.delay
-
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
@@ -115,6 +118,13 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                         is GameScreen.PlayerLayout -> when (screen.playerCount) {
+                            1 -> OnePlayerLayout(
+                                onShowPlayerCount = {
+                                    currentScreen = GameScreen.Welcome
+                                },
+                                initiativePlayer = initiativePlayer,
+                                onInitiativeClaimed = { playerId -> initiativePlayer = playerId }
+                            )
                             2 -> TwoPlayerLayout(
                                 onShowPlayerCount = {
                                     currentScreen = GameScreen.Welcome
@@ -216,15 +226,12 @@ fun WelcomeScreen(
             .fillMaxSize()
             .background(Color.Black),
         contentAlignment = Alignment.Center
-    )
-    {
-
+    ) {
         AsyncImage(
             model = R.drawable.hyperspacegif,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            // Explicitly enable animation
             imageLoader = ImageLoader.Builder(LocalContext.current)
                 .components {
                     if (SDK_INT >= 28) {
@@ -271,24 +278,120 @@ fun WelcomeScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            // Player Count Buttons
+            // Player Count Buttons - Circular layout in pairs
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                listOf(2, 3, 4, 5, 6).forEach { playerCount ->
+                // First row: 1 and 2 players
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally)
+                ) {
                     Button(
-                        onClick = { onPlayerCountSelected(playerCount) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp),
+                        onClick = { onPlayerCountSelected(1) },
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Gray.copy(alpha = 0.5f),
                             contentColor = Color.White
                         )
                     ) {
                         Text(
-                            text = "$playerCount Players",
-                            fontSize = 20.sp
+                            text = "1",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Button(
+                        onClick = { onPlayerCountSelected(2) },
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray.copy(alpha = 0.5f),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "2",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Second row: 3 and 4 players
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally)
+                ) {
+                    Button(
+                        onClick = { onPlayerCountSelected(3) },
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray.copy(alpha = 0.5f),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "3",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Button(
+                        onClick = { onPlayerCountSelected(4) },
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray.copy(alpha = 0.5f),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "4",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Third row: 5 and 6 players
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally)
+                ) {
+                    Button(
+                        onClick = { onPlayerCountSelected(5) },
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray.copy(alpha = 0.5f),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "5",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Button(
+                        onClick = { onPlayerCountSelected(6) },
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray.copy(alpha = 0.5f),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "6",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -307,7 +410,6 @@ fun WelcomeScreen(
                 )
             }
         }
-
 
         // Info Dialog
         if (showInfoDialog) {
