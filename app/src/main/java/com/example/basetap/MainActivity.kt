@@ -69,6 +69,9 @@ class MainActivity : ComponentActivity() {
                 sharedPreferences.getBoolean("is_first_run", true)
             }
 
+            //SharedPreferences database
+            val gameRepository = remember { GameRepository(context) }
+
             var showFirstTimePopup by remember { mutableStateOf(isFirstRun) }
 
             // Mark first run as completed if showing popup
@@ -130,7 +133,8 @@ class MainActivity : ComponentActivity() {
                                     currentScreen = GameScreen.Welcome
                                 },
                                 initiativePlayer = initiativePlayer,
-                                onInitiativeClaimed = { playerId -> initiativePlayer = playerId }
+                                onInitiativeClaimed = { playerId -> initiativePlayer = playerId },
+                                gameRepository = gameRepository
                             )
                             3 -> ThreePlayerLayout(
                                 onShowPlayerCount = {
@@ -165,7 +169,8 @@ class MainActivity : ComponentActivity() {
                                     currentScreen = GameScreen.Welcome
                                 },
                                 initiativePlayer = initiativePlayer,
-                                onInitiativeClaimed = { playerId -> initiativePlayer = playerId }
+                                onInitiativeClaimed = { playerId -> initiativePlayer = playerId },
+                                gameRepository = gameRepository
                             )
                         }
                         // Add an exhaustive else branch defaulting to two-player layout
@@ -174,7 +179,8 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = GameScreen.Welcome
                             },
                             initiativePlayer = initiativePlayer,
-                            onInitiativeClaimed = { playerId -> initiativePlayer = playerId }
+                            onInitiativeClaimed = { playerId -> initiativePlayer = playerId },
+                            gameRepository = gameRepository
                         )
                     }
                     }

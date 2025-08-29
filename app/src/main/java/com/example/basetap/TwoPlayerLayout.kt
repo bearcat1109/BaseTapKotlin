@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,14 +23,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun TwoPlayerLayout(
     onShowPlayerCount: () -> Unit,
     initiativePlayer: Int?,
-    onInitiativeClaimed: (Int) -> Unit
+    onInitiativeClaimed: (Int) -> Unit,
+    gameRepository: GameRepository
 ) {
     var topLife by remember { mutableStateOf(0) }
     var bottomLife by remember { mutableStateOf(0) }
@@ -44,6 +50,42 @@ fun TwoPlayerLayout(
 
     // Info button
     var showInfoDialog by remember { mutableStateOf(false) }
+
+    // Victory dialog state
+    var showVictoryDialog by remember { mutableStateOf(false) }
+    var gameStartTime by remember { mutableStateOf(System.currentTimeMillis()) }
+
+    val context = LocalContext.current
+
+    // Helper function to get leader name from image resource
+    fun getLeaderNameFromImage(imageResource: Int): String {
+        return try {
+            context.resources.getResourceEntryName(imageResource)
+        } catch (e: Exception) {
+            "unknown_leader"
+        }
+    }
+
+    // Check for victory condition (damage reaches base max health)
+    LaunchedEffect(topLife, bottomLife, topBaseId, bottomBaseId) {
+        // Get max health for each base using your existing Bases enum
+        val topMaxHealth = Bases.findById(topBaseId)?.maxHealth ?: 30
+        val bottomMaxHealth = Bases.findById(bottomBaseId)?.maxHealth ?: 30
+
+        if (topLife >= topMaxHealth || bottomLife >= bottomMaxHealth) {
+            if (!showVictoryDialog) {
+                showVictoryDialog = true
+            }
+        }
+    }
+
+    // Reset function
+    fun resetGame() {
+        topLife = 0
+        bottomLife = 0
+        gameStartTime = System.currentTimeMillis()
+        showVictoryDialog = false
+    }
 
     Column(
         modifier = Modifier
@@ -87,8 +129,7 @@ fun TwoPlayerLayout(
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-                        topLife = 0
-                        bottomLife = 0
+                        resetGame()
                     }
             )
 
@@ -116,7 +157,7 @@ fun TwoPlayerLayout(
 
             Icon(
                 imageVector = Icons.Default.Info,
-                contentDescription = "Select Player Count",
+                contentDescription = "Info",
                 tint = Color.White,
                 modifier = Modifier
                     .size(24.dp)
@@ -124,12 +165,6 @@ fun TwoPlayerLayout(
                         showInfoDialog = true
                     }
             )
-
-            if(showInfoDialog){
-                InfoDialog(
-                    onDismissRequest = { showInfoDialog = false }
-                )
-            }
         }
 
         // Bottom Player
@@ -151,6 +186,64 @@ fun TwoPlayerLayout(
             initiativePlayer = initiativePlayer,
             onInitiativeClaimed = onInitiativeClaimed,
             playerId = 1
+        )
+    }
+
+    // Victory Dialog with Database Storage
+    if (showVictoryDialog) {
+        VictoryDialog(
+            player1Name = playerNames[0],
+            player2Name = playerNames[1],
+            player1Life = topLife,
+            player2Life = bottomLife,
+            player1BaseId = topBaseId,
+            player2BaseId = bottomBaseId,
+            player1LeaderImage = topImage,
+            player2LeaderImage = bottomImage,
+            onWinnerSelected = { winnerIndex ->
+                val gameDuration = (System.currentTimeMillis() - gameStartTime) / 60000 // Convert to minutes
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (winnerIndex == 0) {
+                        // Player 1 (top) wins
+                        gameRepository.saveGameResult(
+                            winnerName = playerNames[0],
+                            winnerBaseId = topBaseId,
+                            winnerLeaderImage = getLeaderNameFromImage(topImage),
+                            winnerLife = topLife,
+                            loserName = playerNames[1],
+                            loserBaseId = bottomBaseId,
+                            loserLeaderImage = getLeaderNameFromImage(bottomImage),
+                            loserLife = bottomLife,
+                            gameDurationMinutes = gameDuration
+                        )
+                    } else {
+                        // Player 2 (bottom) wins
+                        gameRepository.saveGameResult(
+                            winnerName = playerNames[1],
+                            winnerBaseId = bottomBaseId,
+                            winnerLeaderImage = getLeaderNameFromImage(bottomImage),
+                            winnerLife = bottomLife,
+                            loserName = playerNames[0],
+                            loserBaseId = topBaseId,
+                            loserLeaderImage = getLeaderNameFromImage(topImage),
+                            loserLife = topLife,
+                            gameDurationMinutes = gameDuration
+                        )
+                    }
+                }
+                resetGame()
+            },
+            onDismiss = {
+                showVictoryDialog = false
+            }
+        )
+    }
+
+    // Info Dialog
+    if(showInfoDialog){
+        InfoDialog(
+            onDismissRequest = { showInfoDialog = false }
         )
     }
 }
