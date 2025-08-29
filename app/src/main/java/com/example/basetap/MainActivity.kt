@@ -118,7 +118,16 @@ class MainActivity : ComponentActivity() {
                         is GameScreen.Welcome -> WelcomeScreen(
                             onPlayerCountSelected = { playerCount ->
                                 currentScreen = GameScreen.PlayerLayout(playerCount)
+                            },
+                            onStatsClicked = {
+                                currentScreen = GameScreen.Stats
                             }
+                        )
+                        is GameScreen.Stats -> StatsScreen(
+                            onBack = {
+                                currentScreen = GameScreen.Welcome
+                            },
+                            gameRepository = gameRepository
                         )
                         is GameScreen.PlayerLayout -> when (screen.playerCount) {
                             1 -> OnePlayerLayout(
@@ -199,13 +208,15 @@ class MainActivity : ComponentActivity() {
 sealed class GameScreen {
     object Welcome : GameScreen()
     data class PlayerLayout(val playerCount: Int) : GameScreen()
+    object Stats : GameScreen()
 }
 
 
 // Welcome screen
 @Composable
 fun WelcomeScreen(
-    onPlayerCountSelected: (Int) -> Unit
+    onPlayerCountSelected: (Int) -> Unit,
+    onStatsClicked: () -> Unit  // Add this parameter
 ) {
     var showInfoDialog by remember { mutableStateOf(false) }
 
@@ -405,15 +416,33 @@ fun WelcomeScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Info or About button
-            TextButton(
-                onClick = { showInfoDialog = true },
-                modifier = Modifier.padding(top = 16.dp)
+            // Bottom buttons row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
             ) {
-                Text(
-                    text = "About BaseTap",
-                    color = Color.White.copy(alpha = 0.7f)
-                )
+                // Statistics button
+                TextButton(
+                    onClick = onStatsClicked,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(
+                        text = "Statistics",
+                        color = Color.Yellow.copy(alpha = 0.8f),
+                        fontSize = 16.sp
+                    )
+                }
+
+                // Info or About button
+                TextButton(
+                    onClick = { showInfoDialog = true },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(
+                        text = "About BaseTap",
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
 
