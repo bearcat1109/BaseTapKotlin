@@ -1,5 +1,6 @@
 package dev.bearcat.basetap
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -33,13 +35,41 @@ fun OnePlayerLayout(
     initiativePlayer: Int?,
     onInitiativeClaimed: (Int) -> Unit
 ) {
+    val context = LocalContext.current
+    val sharedPreferences = remember {
+        context.getSharedPreferences("game_prefs", Context.MODE_PRIVATE)
+    }
+
+    // Load saved values or use defaults
     var playerLife by remember { mutableStateOf(0) }
-    var playerImage by remember { mutableStateOf(R.drawable.darth_maul_sith_revealed_showcase) }
-    var playerBaseId by remember { mutableStateOf(47) }
-    var playerName by remember { mutableStateOf("Player 1") }
+    var playerImage by remember {
+        mutableStateOf(
+            sharedPreferences.getInt("single_player_leader_image", R.drawable.darth_maul_sith_revealed_showcase)
+        )
+    }
+    var playerBaseId by remember {
+        mutableStateOf(
+            sharedPreferences.getInt("single_player_base_id", 47)
+        )
+    }
+    var playerName by remember {
+        mutableStateOf(
+            sharedPreferences.getString("single_player_name", "Player 1") ?: "Player 1"
+        )
+    }
 
     // Info button
     var showInfoDialog by remember { mutableStateOf(false) }
+
+    // Helper function to save preferences
+    fun savePreferences() {
+        with(sharedPreferences.edit()) {
+            putInt("single_player_leader_image", playerImage)
+            putInt("single_player_base_id", playerBaseId)
+            putString("single_player_name", playerName)
+            apply()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -111,9 +141,16 @@ fun OnePlayerLayout(
             playerName = playerName,
             onNameChange = { newName ->
                 playerName = newName
+                savePreferences()
             },
-            onImageChange = { playerImage = it },
-            onBaseChange = { playerBaseId = it },
+            onImageChange = {
+                playerImage = it
+                savePreferences()
+            },
+            onBaseChange = {
+                playerBaseId = it
+                savePreferences()
+            },
             onLifeChange = { playerLife = it },
             initiativePlayer = initiativePlayer,
             onInitiativeClaimed = onInitiativeClaimed,

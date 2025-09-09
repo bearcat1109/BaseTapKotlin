@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.content.Context
 
 @Composable
 fun TwoPlayerLayout(
@@ -37,16 +38,45 @@ fun TwoPlayerLayout(
     onInitiativeClaimed: (Int) -> Unit,
     gameRepository: GameRepository
 ) {
+    val context = LocalContext.current
+    val sharedPreferences = remember {
+        context.getSharedPreferences("game_prefs", Context.MODE_PRIVATE)
+    }
+
+    // Load saved values or use defaults
     var topLife by remember { mutableStateOf(0) }
     var bottomLife by remember { mutableStateOf(0) }
 
-    var topImage by remember { mutableStateOf(R.drawable.darth_maul_sith_revealed_showcase) }
-    var bottomImage by remember { mutableStateOf(R.drawable.qui_gon_jinn_student_of_the_living_force_showcase) }
+    var topImage by remember {
+        mutableStateOf(
+            sharedPreferences.getInt("top_leader_image", R.drawable.darth_maul_sith_revealed_showcase)
+        )
+    }
+    var bottomImage by remember {
+        mutableStateOf(
+            sharedPreferences.getInt("bottom_leader_image", R.drawable.qui_gon_jinn_student_of_the_living_force_showcase)
+        )
+    }
 
-    var topBaseId by remember { mutableStateOf(47) }
-    var bottomBaseId by remember { mutableStateOf(28) }
+    var topBaseId by remember {
+        mutableStateOf(
+            sharedPreferences.getInt("top_base_id", 47)
+        )
+    }
+    var bottomBaseId by remember {
+        mutableStateOf(
+            sharedPreferences.getInt("bottom_base_id", 28)
+        )
+    }
 
-    var playerNames by remember { mutableStateOf(List(2) { "Player ${it + 1}" }) }
+    var playerNames by remember {
+        mutableStateOf(
+            listOf(
+                sharedPreferences.getString("player_1_name", "Player 1") ?: "Player 1",
+                sharedPreferences.getString("player_2_name", "Player 2") ?: "Player 2"
+            )
+        )
+    }
 
     // Info button
     var showInfoDialog by remember { mutableStateOf(false) }
@@ -55,7 +85,18 @@ fun TwoPlayerLayout(
     var showVictoryDialog by remember { mutableStateOf(false) }
     var gameStartTime by remember { mutableStateOf(System.currentTimeMillis()) }
 
-    val context = LocalContext.current
+    // Helper function to save preferences
+    fun savePreferences() {
+        with(sharedPreferences.edit()) {
+            putInt("top_leader_image", topImage)
+            putInt("bottom_leader_image", bottomImage)
+            putInt("top_base_id", topBaseId)
+            putInt("bottom_base_id", bottomBaseId)
+            putString("player_1_name", playerNames[0])
+            putString("player_2_name", playerNames[1])
+            apply()
+        }
+    }
 
     // Helper function to get leader name from image resource
     fun getLeaderNameFromImage(imageResource: Int): String {
@@ -104,9 +145,16 @@ fun TwoPlayerLayout(
             playerName = playerNames[0],
             onNameChange = { newName ->
                 playerNames = playerNames.toMutableList().also { it[0] = newName }
+                savePreferences()
             },
-            onImageChange = { topImage = it },
-            onBaseChange = { topBaseId = it },
+            onImageChange = {
+                topImage = it
+                savePreferences()
+            },
+            onBaseChange = {
+                topBaseId = it
+                savePreferences()
+            },
             onLifeChange = { topLife = it },
             initiativePlayer = initiativePlayer,
             onInitiativeClaimed = onInitiativeClaimed,
@@ -179,9 +227,16 @@ fun TwoPlayerLayout(
             playerName = playerNames[1],
             onNameChange = { newName ->
                 playerNames = playerNames.toMutableList().also { it[1] = newName }
+                savePreferences()
             },
-            onImageChange = { bottomImage = it },
-            onBaseChange = { bottomBaseId = it },
+            onImageChange = {
+                bottomImage = it
+                savePreferences()
+            },
+            onBaseChange = {
+                bottomBaseId = it
+                savePreferences()
+            },
             onLifeChange = { bottomLife = it },
             initiativePlayer = initiativePlayer,
             onInitiativeClaimed = onInitiativeClaimed,
