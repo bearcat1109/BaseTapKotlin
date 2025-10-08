@@ -1,5 +1,6 @@
 package dev.bearcat.basetap
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import android.content.Context
 
 @Composable
 fun TwoPlayerLayout(
@@ -255,12 +255,12 @@ fun TwoPlayerLayout(
             player2BaseId = bottomBaseId,
             player1LeaderImage = topImage,
             player2LeaderImage = bottomImage,
+            gameDurationMinutes = (System.currentTimeMillis() - gameStartTime) / 60000,  // Add this line
             onWinnerSelected = { winnerIndex ->
-                val gameDuration = (System.currentTimeMillis() - gameStartTime) / 60000 // Convert to minutes
+                val gameDuration = (System.currentTimeMillis() - gameStartTime) / 60000
 
                 CoroutineScope(Dispatchers.IO).launch {
                     if (winnerIndex == 0) {
-                        // Player 1 (top) wins
                         gameRepository.saveGameResult(
                             winnerName = playerNames[0],
                             winnerBaseId = topBaseId,
@@ -273,7 +273,6 @@ fun TwoPlayerLayout(
                             gameDurationMinutes = gameDuration
                         )
                     } else {
-                        // Player 2 (bottom) wins
                         gameRepository.saveGameResult(
                             winnerName = playerNames[1],
                             winnerBaseId = bottomBaseId,
@@ -302,3 +301,4 @@ fun TwoPlayerLayout(
         )
     }
 }
+

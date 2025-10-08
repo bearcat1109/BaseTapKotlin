@@ -1,6 +1,8 @@
 // VictoryDialog.kt
 package dev.bearcat.basetap
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -8,16 +10,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,9 +51,13 @@ fun VictoryDialog(
     player2BaseId: Int,
     player1LeaderImage: Int,
     player2LeaderImage: Int,
+    gameDurationMinutes: Long = 0,
     onWinnerSelected: (winnerIndex: Int) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    var showEmailDialog by remember { mutableStateOf(false) }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -84,7 +104,9 @@ fun VictoryDialog(
                     playerLife = player1Life,
                     baseId = player1BaseId,
                     leaderImage = player1LeaderImage,
-                    onClick = { onWinnerSelected(0) }
+                    onClick = {
+                        onWinnerSelected(0)
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -95,10 +117,33 @@ fun VictoryDialog(
                     playerLife = player2Life,
                     baseId = player2BaseId,
                     leaderImage = player2LeaderImage,
-                    onClick = { onWinnerSelected(1) }
+                    onClick = {
+                        onWinnerSelected(1)
+                    }
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Email Results Button
+                OutlinedButton(
+                    onClick = {
+                        showEmailDialog = true
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Cyan
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Email Results")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Cancel/Continue Playing Button
                 OutlinedButton(
@@ -113,7 +158,39 @@ fun VictoryDialog(
             }
         }
     }
+
+    // Email Input Dialog - OUTSIDE the main Dialog
+    if (showEmailDialog) {
+        EmailInputDialog(
+            onDismiss = { showEmailDialog = false },
+            onConfirm = { emailAddress ->
+                val winner = when {
+                    player1Life >= (Bases.findById(player1BaseId)?.maxHealth ?: 30) -> player2Name
+                    player2Life >= (Bases.findById(player2BaseId)?.maxHealth ?: 30) -> player1Name
+                    else -> "Unknown"
+                }
+
+                sendGameResultEmail(
+                    context = context,
+                    recipientEmail = emailAddress,
+                    player1Name = player1Name,
+                    player2Name = player2Name,
+                    player1Life = player1Life,
+                    player2Life = player2Life,
+                    player1BaseId = player1BaseId,
+                    player2BaseId = player2BaseId,
+                    player1LeaderImage = player1LeaderImage,
+                    player2LeaderImage = player2LeaderImage,
+                    winnerName = winner,
+                    gameDurationMinutes = gameDurationMinutes
+                )
+                showEmailDialog = false
+            }
+        )
+    }
 }
+
+
 
 @Composable
 private fun PlayerWinButton(
@@ -362,4 +439,121 @@ private fun getLeaderNameFromImage(imageResource: Int): String {
     )
 
     return images.find { it.first == imageResource }?.second ?: "Unknown Leader"
+}
+
+fun sendGameResultEmail(
+    context: Context,
+    recipientEmail: String,
+    player1Name: String,
+    player2Name: String,
+    player1Life: Int,
+    player2Life: Int,
+    player1BaseId: Int,
+    player2BaseId: Int,
+    player1LeaderImage: Int,
+    player2LeaderImage: Int,
+    winnerName: String,
+    gameDurationMinutes: Long
+) {
+    val player1Leader = getLeaderNameFromImage(player1LeaderImage)
+    val player2Leader = getLeaderNameFromImage(player2LeaderImage)
+    val player1Base = Bases.findById(player1BaseId)?.name ?: "Unknown Base"
+    val player2Base = Bases.findById(player2BaseId)?.name ?: "Unknown Base"
+
+    val emailSubject = "Star Wars Unlimited Game Result - $winnerName Wins!"
+    val emailBody = """
+        Game Results:
+        ═══════════════════════════════════
+        
+        Winner: $winnerName
+        Game Duration: $gameDurationMinutes minutes
+        
+        Player 1: $player1Name
+        - Leader: $player1Leader
+        - Base: $player1Base (ID: $player1BaseId)
+        - Final Life: $player1Life
+        
+        Player 2: $player2Name
+        - Leader: $player2Leader
+        - Base: $player2Base (ID: $player2BaseId)
+        - Final Life: $player2Life
+        
+        ═══════════════════════════════════
+        Sent from BaseTap - Star Wars Unlimited Life Counter
+    """.trimIndent()
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "message/rfc822"
+        putExtra(Intent.EXTRA_EMAIL, arrayOf(recipientEmail))
+        putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+        putExtra(Intent.EXTRA_TEXT, emailBody)
+    }
+
+    try {
+        context.startActivity(Intent.createChooser(intent, "Send game results via..."))
+    } catch (e: Exception) {
+        // Handle case without email later (To-do)
+    }
+}
+
+// Email Input Dialog
+// Prompts user for their email before sending
+@Composable
+fun EmailInputDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var emailText by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Enter Email Address",
+                color = Color.White
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = "Enter the email address to send game results to:",
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                TextField(
+                    value = emailText,
+                    onValueChange = { emailText = it },
+                    placeholder = { Text("email@example.com") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.DarkGray,
+                        unfocusedContainerColor = Color.DarkGray,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.Cyan
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (emailText.isNotBlank()) {
+                        onConfirm(emailText)
+                    }
+                },
+                enabled = emailText.isNotBlank()
+            ) {
+                Text("Send", color = Color.Cyan)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color = Color.Gray)
+            }
+        },
+        containerColor = Color.Black
+    )
 }
