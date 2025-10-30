@@ -134,7 +134,17 @@ enum class Bases(val id: Int, val baseName: String, val maxHealth: Int) {
     STRANGLED_CLIFFS(53, "Strangled Cliffs(Aggression)", 28),
     TOMB_OF_EILRAM(54, "Tomb of Eilram(Cunning)", 25),
     CRYSTAL_CAVES(55, "Crystal Caves(Cunning)", 28),
-    THE_HOLY_CITY(56, "The Holy City(Cunning)", 28)
+    THE_HOLY_CITY(56, "The Holy City(Cunning)", 28),
+
+    // Set 6
+    RIX_ROAD(57, "Rix Road(Vigilance)", 30),
+    USCRU_ENTERTAINMENT_DISTRICT(58, "Uscru Entertainment District(Vigilance)", 30),
+    REPUBLIC_CITY(59, "Republic City(Command)", 30),
+    SENATE_ROTUNDA(60, "Senate Rotunda(Command)", 30),
+    IMERIAL_PRISON_COMPLEX(61, "Imperial Prison Complex(Aggression)", 30),
+    NAVAL_INTELLIGENCE_HQ(62, "Naval Intelligence HQ(Aggression", 30),
+    AMNESTY_HOUSING(63, "Amnesty Housing(Cunning)", 30),
+    MOUNT_TANTISS(64, "Mount Tantiss(Cunning)", 30)
     ;
 
     companion object {
@@ -793,6 +803,28 @@ fun LeaderSelectorForPlayer(
         R.drawable.darth_revan_scourge_of_the_old_republic_showcase to "Darth Revan, Scourge of the Old Republic (Showcase)",
         R.drawable.qui_gon_jinn_student_of_the_living_force_showcase to "Qui Gon Jinn, Student of the Living Force (Showcase)",
         R.drawable.third_sister_seething_with_ambition_showcase to "Third Sister, Seething with Ambition (Showcase)",
+
+        // Set 6
+        R.drawable.chancellor_palpatine_how_liberty_dies to "Chancellor Palptatine, How Liberty Dies",
+        R.drawable.jabba_the_hutt_wonderful_human_being to "Jabba the Hutt, Wonderful Human Being",
+        R.drawable.lama_su_we_modified_their_genetics to "Lama Su, We Modified Their Genetics",
+        R.drawable.leia_organa_of_a_secret_bloodline to "Leia Organa, Of a Secret Bloodline",
+        R.drawable.satine_kryze_standing_on_principles to "Satine Kryze, Standing on Principles",
+        R.drawable.colonel_yularen_this_is_why_we_plan to "Colonel Yularen, This is Why We Plan",
+        R.drawable.dryden_vos_i_never_ask_twice to "Dryden Vos, I Never Ask Twice",
+        R.drawable.bail_organa_doing_everything_he_can to "Bail Organa, Doing Everything He Can",
+        R.drawable.mon_mothma_forming_a_coalition to "Mon Mothma, Forming a Coalition",
+        R.drawable.dedra_meero_not_wasting_time to "Dedra Meero, Not Wasting Time",
+        R.drawable.governor_pryce_tyrant_of_lothal to "Governor Pryce, Tyrant of Lothal",
+        R.drawable.cassian_andor_climb to "Cassian Andor, Climb!",
+        R.drawable.luthen_rael_dont_you_want_to_fight_for_real to "Luthen Rael, Don't You Want to Fight For Real?",
+        R.drawable.sly_moore_cipher_in_the_dark to "Sly Moore, Cipher in the Dark",
+        R.drawable.c3po_human_cyborg_relations to "C-3PO, Human-Cyborg Relations",
+        R.drawable.padme_amidala_what_do_you_have_to_hide to "Padme Amidala, What Do You Have to Hide?",
+        R.drawable.sabe_queens_shadow to "Sabe, Queen's Shadow",
+        R.drawable.dj_need_a_lift to "DJ, Need a Lift?",
+
+
         // Misc
         R.drawable.vader_prize_wall_banner to "Vader Prize Wall Banner"
         )
